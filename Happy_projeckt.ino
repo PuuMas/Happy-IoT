@@ -19,6 +19,8 @@ int i = 0; // Otetaan numerot ettei tule spämmiä konsoliin
 
 int value = 0; // variable to store the water sensor value
 
+
+
 void setup() {
 
   Serial.begin(9600); // Serial comm begin at 9600bps
@@ -30,8 +32,6 @@ void setup() {
   pinMode(green_light_pin, OUTPUT);
   pinMode(blue_light_pin, OUTPUT);
 
-  RGB_color(255,0,0); //show red led when no data is read 
-
   
 if(dht11.read2(pinDHT11, &temperature, &humidity, data)){
   RGB_color(255,0,0); //If error show red led
@@ -41,6 +41,8 @@ if(dht11.read2(pinDHT11, &temperature, &humidity, data)){
 }
 
 void loop() {
+if(i <= 1){
+  RGB_color(0,255,0); // Set the color of the RGB to Green
   
   LDR_input_val = analogRead(LDR);
   
@@ -48,17 +50,41 @@ void loop() {
   delay(10);                      // wait 10 milliseconds
   value = analogRead(SIGNAL_PIN); // read the analog value from  water sensor
   digitalWrite(POWER_PIN, LOW);   // turn the  water sensor OFF
-
-
-      LDR_input_val > 200 ? Serial.print("1") : Serial.print("0");
+  
+        //Look for the LDR values
+      if(LDR_input_val < 150){
+        Serial.print("HIGH");
+        }
+        else if(LDR_input_val > 600){
+          Serial.print("LOW");
+        }
+        else{
+          Serial.print("MEDIUM");
+        }
       Serial.print("x");
-      Serial.print(value);
+      //Look for the water sensor values
+       if(value < 300){
+        Serial.print("LOW");
+        }
+        else if(value > 870){
+          Serial.print("HIGH");
+        }
+        else{
+          Serial.print("MEDIUM");
+        }
+        
       Serial.print("x");
-      Serial.print((int)temperature);
+      Serial.print(temperature); // Print the tempature value
       Serial.print("x");
-      Serial.println((int)humidity);
-      RGB_color(0,255,0);
-      delay(1000); 
+      Serial.print(humidity); // Print the humidity value
+      Serial.println("x");
+      delay(5000); // five sec delay
+      i++;
+  }
+  else{
+    RGB_color(255,0,0); //show red led when no data is read 
+    exit; // Exit the continues loop
+  }
 }
 
 
